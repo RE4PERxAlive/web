@@ -1,6 +1,5 @@
 // api/keys.js
-import fs from 'fs';
-import path from 'path';
+import { put, list } from '@vercel/blob';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -10,30 +9,30 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const dbPath = path.join('/tmp', 'uuids.json');
-
-  if (req.method === 'GET') {
-    try {
-      if (fs.existsSync(dbPath)) {
-        const data = fs.readFileSync(dbPath, 'utf8');
-        return res.status(200).json(JSON.parse(data));
-      }
-      return res.status(200).json([]);
-    } catch (e) {
-      return res.status(500).json({ error: "Failed to read database" });
+  try {
+    if (req.method === 'GET') {
+      const { blobs } = await list({ prefix: 'uuids.json' });
+      if (blobs.length === 0) return res.status(200).json([]);
+      
+      const response = await fetch(blobs[0].url);
+      const data = await response.json();
+      return res.status(200).json(data);
     }
-  }
 
-  if (req.method === 'POST') {
-    try {
+    if (req.method === 'POST') {
       const { action, keys } = req.body;
       if (action === 'save_all') {
-        fs.writeFileSync(dbPath, JSON.stringify(keys, null, 2), 'utf8');
+        // Overwrite the file in Vercel Blob
+        await put('uuids.json', JSON.stringify(keys, null, 2), {
+          access: 'public',
+          addRandomSuffix: false, // Keeps the name exactly 'uuids.json'
+          contentType: 'application/json'
+        });
         return res.status(200).json({ success: true });
       }
-      return res.status(400).json({ error: "Invalid action" });
-    } catch (e) {
-      return res.status(500).json({ error: "Failed to save database" });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
   }
 }

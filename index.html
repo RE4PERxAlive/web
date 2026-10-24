@@ -8,218 +8,127 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #08070b;
-            --card: #16121e;
-            --border: rgba(255, 0, 60, 0.22);
-            --primary: #ff003c;
-            --text: #f3f3f8;
-            --muted: #9591a6;
-            --success: #00e676;
-            --danger: #ff1744;
+            --bg-base: #08070b; --bg-card: rgba(22, 18, 30, 0.75); --border: rgba(255, 0, 60, 0.22);
+            --primary: #ff003c; --text-main: #f3f3f8; --text-muted: #9591a6; --success: #00e676; --danger: #ff1744;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Outfit', sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
         body {
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--bg-base); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column;
+            background-image: radial-gradient(circle at 15% 15%, rgba(255, 0, 60, 0.09) 0%, transparent 45%), radial-gradient(circle at 85% 85%, rgba(130, 0, 35, 0.09) 0%, transparent 45%);
         }
-
-        .glass {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-        }
-
-            .btn-primary:hover {
-                opacity: 0.8;
-            }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-
-        .input {
-            width: 100%;
-            padding: 12px;
-            background: #0a080f;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px;
-            color: #fff;
-            outline: none;
-            margin-bottom: 12px;
-        }
-
-            .input:focus {
-                border-color: var(--primary);
-            }
-
-        /* Login */
-        #login-view {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-box {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
+        .glass { background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6); }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #b3002a); color: #fff; box-shadow: 0 4px 15px rgba(255, 0, 60, 0.4); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        .form-input { width: 100%; padding: 12px 14px; background: rgba(10, 8, 15, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; color: var(--text-main); outline: none; margin-bottom: 15px; font-size: 14px; }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(255, 0, 60, 0.3); }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+        
+        /* Auth Screen */
+        #auth-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .auth-card { width: 100%; max-width: 400px; padding: 40px 32px; text-align: center; }
+        .brand-logo { width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), #b3002a); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; margin-bottom: 15px; box-shadow: 0 0 20px rgba(255, 0, 60, 0.5); }
+        
         /* Dashboard */
-        #dashboard-view {
-            display: none;
-            padding: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px;
-            color: var(--muted);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        td {
-            padding: 16px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .status {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-            .status.active {
-                background: rgba(0,230,118,0.1);
-                color: var(--success);
-                border: 1px solid var(--success);
-            }
-
-            .status.revoked {
-                background: rgba(255,23,68,0.1);
-                color: var(--danger);
-                border: 1px solid var(--danger);
-            }
-
-        .code {
-            font-family: 'Fira Code', monospace;
-            color: #4ef0a5;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 6px;
-            color: #fff;
-            display: none;
-            z-index: 1000;
-        }
+        #dashboard-container { display: none; flex-direction: column; min-height: 100vh; }
+        .navbar { height: 70px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(12, 10, 18, 0.88); backdrop-filter: blur(12px); }
+        .main-content { padding: 32px; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        
+        /* Table */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: rgba(18, 14, 26, 0.95); padding: 16px 20px; color: var(--text-muted); border-bottom: 1px solid rgba(255,255,255,0.08); font-size: 12px; text-transform: uppercase; }
+        td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(14, 11, 20, 0.5); vertical-align: middle; }
+        .code { font-family: 'Fira Code', monospace; color: #4ef0a5; }
+        .status-pill { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pill.active { background: rgba(0, 230, 118, 0.1); color: var(--success); border: 1px solid rgba(0, 230, 118, 0.3); }
+        .status-pill.revoked { background: rgba(255, 23, 68, 0.1); color: var(--danger); border: 1px solid rgba(255, 23, 68, 0.3); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+        .modal-card { width: 100%; max-width: 450px; padding: 32px; }
+        
+        #toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; border-radius: 8px; color: #fff; display: none; z-index: 1000; font-weight: 600; border-left: 4px solid #fff; }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN VIEW -->
-    <div id="login-view">
-        <div class="glass login-box">
-            <div style="font-size: 40px; color: var(--primary); margin-bottom: 10px;"><i class="fa-solid fa-skull"></i></div>
-            <h2 style="margin-bottom: 20px;">Admin Login</h2>
-            <input type="text" id="username" class="input" placeholder="Username">
-            <input type="password" id="password" class="input" placeholder="Password">
-            <button class="btn btn-primary" onclick="login()" style="width: 100%;">Login</button>
+    <!-- LOGIN -->
+    <div id="auth-container">
+        <div class="glass auth-card">
+            <div class="brand-logo"><i class="fa-solid fa-skull"></i></div>
+            <h1 style="font-size: 24px; margin-bottom: 5px;">BLOODY AUTH</h1>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 25px;">System UUID Management</p>
+            <input type="text" id="username" class="form-input" placeholder="Admin Username">
+            <input type="password" id="password" class="form-input" placeholder="Admin Password">
+            <button class="btn btn-primary" onclick="login()" style="width: 100%; justify-content: center;">Login as Admin</button>
         </div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
-    <div id="dashboard-view">
-        <div class="header">
-            <h2><i class="fa-solid fa-skull"></i> Bloody Auth Dashboard</h2>
-            <button class="btn btn-secondary" onclick="logout()">Logout</button>
-        </div>
+    <!-- DASHBOARD -->
+    <div id="dashboard-container">
+        <nav class="navbar">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="brand-logo" style="width: 38px; height: 38px; font-size: 18px; margin: 0; border-radius: 8px;"><i class="fa-solid fa-skull"></i></div>
+                <h2 style="font-size: 18px;">BLOODY AUTH</h2>
+            </div>
+            <button class="btn btn-secondary" onclick="logout()"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </nav>
 
-        <div class="glass">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3>Authorized Systems</h3>
-                <button class="btn btn-primary" onclick="openModal()">+ Register UUID</button>
+        <div class="main-content">
+            <div class="header-actions">
+                <div>
+                    <h2 style="font-size: 22px;">All Registered Systems</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Manage UUIDs and access durations.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Register New UUID</button>
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>System UUID</th>
-                        <th>Device Name</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    <!-- Dynamically filled -->
-                </tbody>
-            </table>
+            <div class="glass table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>System UUID</th>
+                            <th>Device Name</th>
+                            <th>Status</th>
+                            <th>Expiry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Dynamic -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- MODAL -->
-    <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:100;">
-        <div class="glass" style="width:100%; max-width:400px;">
-            <h3 style="margin-bottom:20px;">Register UUID</h3>
-            <input type="text" id="new-uuid" class="input" placeholder="UUID (e.g. DBA83997...)">
-            <input type="text" id="new-name" class="input" placeholder="Device Name">
-            <button class="btn btn-primary" onclick="saveUuid()" style="width:100%;">Save</button>
-            <button class="btn btn-secondary" onclick="closeModal()" style="width:100%; margin-top:10px;">Cancel</button>
+    <div class="modal-overlay" id="modal">
+        <div class="glass modal-card">
+            <h3 style="margin-bottom: 20px;">Register New System</h3>
+            <label class="form-label">System UUID</label>
+            <input type="text" id="new-uuid" class="form-input" placeholder="e.g. DBA83997-C0C0..." style="font-family: 'Fira Code';">
+            
+            <label class="form-label">Device / User Name</label>
+            <input type="text" id="new-name" class="form-input" placeholder="e.g. User_PC">
+            
+            <label class="form-label">Access Duration</label>
+            <select id="new-days" class="form-input" style="cursor: pointer;">
+                <option value="1">1 Day</option>
+                <option value="7">7 Days</option>
+                <option value="30" selected>30 Days</option>
+                <option value="365">1 Year</option>
+                <option value="0">Lifetime (No Expiry)</option>
+            </select>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1; justify-content: center;">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUuid()" style="flex: 1; justify-content: center;">Authorize</button>
+            </div>
         </div>
     </div>
 
@@ -228,124 +137,131 @@
     <script>
         let uuids = [];
 
-        // Check if logged in
         if(localStorage.getItem('admin_session') === 'true') {
-        document.getElementById('login-view').style.display = 'none';
-        document.getElementById('dashboard-view').style.display = 'block';
-        loadData();
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('dashboard-container').style.display = 'flex';
+            loadData();
         }
 
         function login() {
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        if(u === 're4per' && p === 're4per123') {
-        localStorage.setItem('admin_session', 'true');
-        document.getElementById('login-view').style.display = 'none';
-        document.getElementById('dashboard-view').style.display = 'block';
-        loadData();
-        } else {
-        showToast('Invalid Credentials', 'danger');
-        }
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            if(u === 're4per' && p === 're4per123') {
+                localStorage.setItem('admin_session', 'true');
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('dashboard-container').style.display = 'flex';
+                loadData();
+            } else {
+                showToast('Invalid Credentials', 'danger');
+            }
         }
 
         function logout() {
-        localStorage.removeItem('admin_session');
-        location.reload();
+            localStorage.removeItem('admin_session');
+            location.reload();
         }
 
         function showToast(msg, type) {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.style.background = type === 'danger' ? 'var(--danger)' : 'var(--success)';
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.background = type === 'danger' ? 'var(--danger)' : 'var(--success)';
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
         }
 
-        // Load data from API, fallback to LocalStorage if API resets
+        // Load Data from Vercel Blob
         async function loadData() {
-        try {
-        const res = await fetch('/api/keys');
-        if(res.ok) {
-        const cloudData = await res.json();
-        if (cloudData.length > 0) {
-        uuids = cloudData;
-        localStorage.setItem('bloody_backup', JSON.stringify(uuids));
-        } else {
-        // API is empty (server slept), load from browser backup
-        const backup = localStorage.getItem('bloody_backup');
-        if(backup) uuids = JSON.parse(backup);
-        }
-        }
-        } catch(e) {
-        const backup = localStorage.getItem('bloody_backup');
-        if(backup) uuids = JSON.parse(backup);
-        }
-        renderTable();
+            try {
+                const res = await fetch('/api/keys');
+                if(res.ok) uuids = await res.json();
+            } catch(e) { showToast('Failed to load DB', 'danger'); }
+            renderTable();
         }
 
         function renderTable() {
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
-        if(uuids.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">No UUIDs registered. Add one above!</td></tr>';
-        return;
-        }
-        uuids.forEach((item, idx) => {
-        tbody.innerHTML += `
-        <tr>
-        <td class="code">${item.uuid}</td>
-        <td>${item.user}</td>
-        <td><span class="status ${item.status.toLowerCase()}">${item.status}</span></td>
-        <td>
-        <button class="btn btn-secondary" onclick="toggleStatus(${idx})" style="padding:4px 8px;">Toggle</button>
-        <button class="btn btn-secondary" onclick="deleteUuid(${idx})" style="padding:4px 8px; color:var(--danger);">Delete</button>
-        </td>
-        </tr>
-        `;
-        });
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            if(uuids.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 30px;">No systems registered yet.</td></tr>';
+                return;
+            }
+            
+            uuids.forEach((item, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="code">${item.uuid}</td>
+                        <td style="font-weight: 600;">${item.user}</td>
+                        <td><span class="status-pill ${item.status.toLowerCase()}">${item.status}</span></td>
+                        <td style="font-size: 12px; color: var(--primary);">${item.expiresFormatted || 'Lifetime'}</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="toggleStatus(${idx})" style="padding: 6px 10px;" title="Revoke/Activate"><i class="fa-solid fa-rotate"></i></button>
+                            <button class="btn btn-secondary" onclick="deleteUuid(${idx})" style="padding: 6px 10px; color: var(--danger);" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
         function openModal() { document.getElementById('modal').style.display = 'flex'; }
         function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
         async function saveUuid() {
-        const uuid = document.getElementById('new-uuid').value.trim().toUpperCase();
-        const name = document.getElementById('new-name').value.trim();
-        if(!uuid || !name) return showToast('Fill all fields', 'danger');
+            const uuid = document.getElementById('new-uuid').value.trim().toUpperCase();
+            const name = document.getElementById('new-name').value.trim();
+            const days = parseInt(document.getElementById('new-days').value);
+            
+            if(!uuid || !name) return showToast('Fill all fields', 'danger');
 
-        const idx = uuids.findIndex(x => x.uuid === uuid);
-        const newObj = { uuid, user: name, status: 'Active' };
+            let expiresFormatted = "Lifetime";
+            let expireTimestamp = 0;
 
-        if(idx !== -1) uuids[idx] = newObj;
-        else uuids.unshift(newObj);
+            if(days > 0) {
+                const expDate = new Date(Date.now() + days * 86400000);
+                expiresFormatted = expDate.toLocaleDateString() + ' ' + expDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                expireTimestamp = Math.floor(expDate.getTime() / 1000);
+            }
 
-        await syncCloud();
-        renderTable();
-        closeModal();
-        showToast('UUID Saved!');
+            const newObj = { 
+                uuid, 
+                user: name, 
+                status: 'Active',
+                durationDays: days,
+                expireTimestamp: expireTimestamp,
+                expiresFormatted: expiresFormatted
+            };
+
+            const idx = uuids.findIndex(x => x.uuid === uuid);
+            if(idx !== -1) uuids[idx] = newObj;
+            else uuids.unshift(newObj);
+
+            await syncCloud();
+            renderTable();
+            closeModal();
+            showToast('UUID Authorized Successfully!');
         }
 
         async function toggleStatus(idx) {
-        uuids[idx].status = uuids[idx].status === 'Active' ? 'Revoked' : 'Active';
-        await syncCloud();
-        renderTable();
+            uuids[idx].status = uuids[idx].status === 'Active' ? 'Revoked' : 'Active';
+            await syncCloud();
+            renderTable();
         }
 
         async function deleteUuid(idx) {
-        uuids.splice(idx, 1);
-        await syncCloud();
-        renderTable();
+            if(!confirm('Delete this UUID permanently?')) return;
+            uuids.splice(idx, 1);
+            await syncCloud();
+            renderTable();
         }
 
         async function syncCloud() {
-        localStorage.setItem('bloody_backup', JSON.stringify(uuids));
-        try {
-        await fetch('/api/keys', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save_all', keys: uuids })
-        });
-        } catch(e) { showToast('Saved locally (API Offline)', 'danger'); }
+            try {
+                const res = await fetch('/api/keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'save_all', keys: uuids })
+                });
+                if(!res.ok) throw new Error("Failed");
+            } catch(e) { showToast('Failed to save to Vercel Blob', 'danger'); }
         }
     </script>
 </body>

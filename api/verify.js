@@ -1,14 +1,13 @@
 // api/verify.js
-export default function handler(req, res) {
+import { kv } from '@vercel/kv';
+
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   const { owner_id, secret_key, system_uuid } = req.query;
 
@@ -17,15 +16,34 @@ export default function handler(req, res) {
     return res.status(403).json({ status: 0, message: "Invalid Owner or Secret Key" });
   }
 
-  // 2. Validate UUID
-  const authorizedUUIDs = [
-    "4C4C4544-0059-3510-804D-B6C04F5A4833",
-    "YOUR_OTHER_UUIDS_HERE"
-  ];
+  if (!system_uuid) {
+    return res.status(400).json({ status: 0, message: "Missing System UUID" });
+  }
 
-  if (system_uuid && authorizedUUIDs.includes(system_uuid.toUpperCase())) {
-    return res.status(200).json({ status: 1, message: "Authorized", user: "Client" });
-  } else {
-    return res.status(200).json({ status: 0, message: "System UUID is not authorized" });
+  try {
+    // 2. Fetch keys from Upstash Database
+    const keys = await kv.get('bloody_keys') || [];
+    
+    // 3. Find the UUID (Make sure both are uppercase and trimmed)
+    const targetUuid = system_uuid.trim().toUpperCase();
+    
+    const match = keys.find(k => {
+      const dbUuid = (k.uuid || k.system_uuid || "").trim().toUpperCase();
+      return dbUuid === targetUuid;
+    });
+
+    // 4. Check status
+    if (match) {
+      if (match.status === 'Active') {
+        return res.status(200).json({ status: 1, message: "Authorized", user: match.user });
+      } else {
+        return res.status(200).json({ status: 0, message: "System UUID is Revoked" });
+      }
+    } else {
+      return res.status(200).json({ status: 0, message: "System UUID is not authorized" });
+    }
+  } catch (error) {
+    console.error("Database Error:", error);
+    return res.status(500).json({ status: 0, message: "Database error" });
   }
 }

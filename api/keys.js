@@ -1,5 +1,6 @@
 // api/keys.js
-import { kv } from '@vercel/kv';
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -9,21 +10,30 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  try {
-    if (req.method === 'GET') {
-      const keys = await kv.get('bloody_keys') || [];
-      return res.status(200).json(keys);
+  const dbPath = path.join('/tmp', 'uuids.json');
+
+  if (req.method === 'GET') {
+    try {
+      if (fs.existsSync(dbPath)) {
+        const data = fs.readFileSync(dbPath, 'utf8');
+        return res.status(200).json(JSON.parse(data));
+      }
+      return res.status(200).json([]);
+    } catch (e) {
+      return res.status(500).json({ error: "Failed to read database" });
     }
+  }
 
-    if (req.method === 'POST') {
-      const { action, keys, newKey } = req.body;
-
+  if (req.method === 'POST') {
+    try {
+      const { action, keys } = req.body;
       if (action === 'save_all') {
-        await kv.set('bloody_keys', keys);
+        fs.writeFileSync(dbPath, JSON.stringify(keys, null, 2), 'utf8');
         return res.status(200).json({ success: true });
       }
+      return res.status(400).json({ error: "Invalid action" });
+    } catch (e) {
+      return res.status(500).json({ error: "Failed to save database" });
     }
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
   }
 }

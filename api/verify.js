@@ -1,4 +1,3 @@
-// api/verify.js
 import { list } from '@vercel/blob';
 
 export default async function handler(req, res) {
@@ -29,18 +28,11 @@ export default async function handler(req, res) {
     }
 
     const targetUuid = system_uuid.trim().toUpperCase();
-    
-    const match = db.find(k => (k.uuid || k.system_uuid || "").trim().toUpperCase() === targetUuid);
+    const match = db.find(k => (k.system_uuid || k.uuid || "").trim().toUpperCase() === targetUuid);
 
-    if (!match) {
-      return res.status(200).json({ status: 0, message: "System UUID is not authorized" });
-    }
+    if (!match) return res.status(200).json({ status: 0, message: "System UUID is not authorized" });
+    if (match.status !== 'Active') return res.status(200).json({ status: 0, message: "System UUID is Revoked" });
 
-    if (match.status !== 'Active') {
-      return res.status(200).json({ status: 0, message: "System UUID is Revoked" });
-    }
-
-    // Expiration Check
     if (match.expireTimestamp && match.expireTimestamp > 0) {
       const now = Math.floor(Date.now() / 1000);
       if (now > match.expireTimestamp) {
@@ -48,12 +40,7 @@ export default async function handler(req, res) {
       }
     }
 
-    return res.status(200).json({ 
-      status: 1, 
-      message: "Authorized", 
-      user: match.user,
-      expires: match.expiresFormatted || 'Lifetime'
-    });
+    return res.status(200).json({ status: 1, message: "Authorized", user: match.user, expires: match.expiresFormatted || 'Lifetime' });
 
   } catch (error) {
     return res.status(500).json({ status: 0, message: "Database fetch failed" });

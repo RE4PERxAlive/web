@@ -1,4 +1,3 @@
-// api/keys.js
 import { put, list } from '@vercel/blob';
 
 export default async function handler(req, res) {
@@ -22,10 +21,9 @@ export default async function handler(req, res) {
     if (req.method === 'POST') {
       const { action, keys } = req.body;
       if (action === 'save_all') {
-        // Overwrite the file in Vercel Blob
         await put('uuids.json', JSON.stringify(keys, null, 2), {
           access: 'public',
-          addRandomSuffix: false, // Keeps the name exactly 'uuids.json'
+          addRandomSuffix: false,
           contentType: 'application/json'
         });
         return res.status(200).json({ success: true });
